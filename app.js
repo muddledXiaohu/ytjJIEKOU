@@ -42,7 +42,7 @@ app.use(users.routes())
 app.use(router.routes()).use(router.allowedMethods());
 
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 
 app.listen(port, () => {
     console.log(`server started on ${port}`);

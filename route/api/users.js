@@ -82,13 +82,14 @@ router.post('/login', async ctx => {
   router.post("/aduser",async (ctx) => {
     //koa-bodyparser解析前端参数
     let reqParam= ctx.request.body;//
+    let querya = String(reqParam.params.query);//检索内容
     let page = Number(reqParam.params.pagenum);//当前第几页
     let size = Number(reqParam.params.pagesize);//每页显示的记录条数
 
     const everyOne =  await DB.find('users') //表总记录数
     //显示符合前端分页请求的列表查询
     // let options = { "limit": size,"skip": (page-1)*size};
-    await DB.count('users', {}, size, (page-1)*size).then((datas) => {
+    await DB.count('users', {username: new RegExp(querya)}, size, (page-1)*size).then((datas) => {
         //返回给前端
         ctx.body = JSON.stringify({totalpage:everyOne.length,pagenum:page,pagesize:size, users: datas})
     })
@@ -103,15 +104,15 @@ router.post('/login', async ctx => {
 router.post("/subject", async (ctx) => {
     //koa-bodyparser解析前端参数
     let reqParam= ctx.request.body;//
-    let querys = Number(reqParam.params.query);//当前第几页
+    let querys = String(reqParam.params.query);//检索内容
     let page = Number(reqParam.params.pagenum);//当前第几页
     let size = Number(reqParam.params.pagesize);//每页显示的记录条数
 
     const everyOne =  await DB.find('subject') //表总记录数
     //显示符合前端分页请求的列表查询
     // let options = { "limit": size,"skip": (page-1)*size};
-    console.log(querys ? querys: {})
-    await DB.count('subject', querys ? querys: {}, size, (page-1)*size).then((datas) => {
+    console.log(querys);
+    await DB.count('subject', {ask: new RegExp(querys)}, size, (page-1)*size).then((datas) => {
         //返回给前端
         ctx.body = JSON.stringify({totalpage:everyOne.length,pagenum:page,pagesize:size, users: datas})
     })
@@ -195,6 +196,11 @@ router.delete("/subject/:id", async (ctx) => {
     ctx.body = JSON.stringify(data); // 响应请求，发送处理后的信息给客户端
 })
 
+// 查询全部考题信息
+router.get("/subjectFire", async (ctx) => {
+    const data = await DB.find('subject', {})
+    ctx.body = JSON.stringify(data); // 响应请求，发送处理后的信息给客户端
+})
 
 // -----------------------------------------------------------------------------------
 
